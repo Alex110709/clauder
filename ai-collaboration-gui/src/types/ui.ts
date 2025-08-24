@@ -79,8 +79,10 @@ export interface MessageAttachment {
 
 export interface ChatSession {
   id: string;
+  title: string;
   name: string;
   projectId?: string;
+  aiTool?: string;
   swarmId?: string;
   messages: ChatMessage[];
   participants: Participant[];

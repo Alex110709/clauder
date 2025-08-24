@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { invoke } from '@tauri-apps/api/core';
 import type { 
   UIState, 
   Theme, 
@@ -42,9 +43,10 @@ interface UIStore extends UIState {
   closeDialog: () => void;
   
   // Chat actions
-  createChatSession: (session: Omit<ChatSession, 'id' | 'createdAt' | 'updatedAt'>) => string;
+  createChatSession: (session: Omit<ChatSession, 'id' | 'createdAt' | 'updatedAt'>) => Promise<string>;
+  loadChatSessions: () => Promise<void>;
   selectChatSession: (sessionId: string) => void;
-  addMessage: (sessionId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
+  addMessage: (sessionId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => Promise<void>;
   
   // File explorer actions
   setFileTree: (tree: FileItem[]) => void;
@@ -156,46 +158,59 @@ export const useUIStore = create<UIStore>()(
         },
 
         // Chat actions
-        createChatSession: (session) => {
-          const sessionId = `session_${Date.now()}`;
-          const now = new Date();
-          const newSession: ChatSession = {
-            ...session,
-            id: sessionId,
-            createdAt: now,
-            updatedAt: now,
-          };
-          
-          set(state => ({
-            chatSessions: [...state.chatSessions, newSession],
-            activeChatSession: sessionId,
-          }));
-          
-          return sessionId;
+        createChatSession: async (session) => {
+          try {
+            const newSession = await invoke<ChatSession>('db_create_chat_session', {
+              title: session.title,
+              projectId: session.projectId,
+              aiTool: session.aiTool,
+              swarmId: session.swarmId,
+            });
+            
+            set(state => ({
+              chatSessions: [...state.chatSessions, newSession],
+              activeChatSession: newSession.id,
+            }));
+            
+            return newSession.id;
+          } catch (error) {
+            console.error('Failed to create chat session:', error);
+            throw error;
+          }
         },
 
         selectChatSession: (sessionId: string) => {
           set({ activeChatSession: sessionId });
         },
 
-        addMessage: (sessionId: string, message) => {
-          const newMessage: ChatMessage = {
-            ...message,
-            id: `msg_${Date.now()}`,
-            timestamp: new Date(),
-          };
-          
-          set(state => ({
-            chatSessions: state.chatSessions.map(session =>
-              session.id === sessionId
-                ? {
-                    ...session,
-                    messages: [...session.messages, newMessage],
-                    updatedAt: new Date(),
-                  }
-                : session
-            ),
-          }));
+        selectChatSession: (sessionId: string) => {
+          set({ activeChatSession: sessionId });
+        },
+
+        addMessage: async (sessionId: string, message) => {
+          try {
+            const newMessage = await invoke<ChatMessage>('db_create_chat_message', {
+              sessionId,
+              role: message.role,
+              content: message.content,
+              metadata: message.metadata,
+            });
+            
+            set(state => ({
+              chatSessions: state.chatSessions.map(session =>
+                session.id === sessionId
+                  ? {
+                      ...session,
+                      messages: [...session.messages, newMessage],
+                      updatedAt: new Date(),
+                    }
+                  : session
+              ),
+            }));
+          } catch (error) {
+            console.error('Failed to add message:', error);
+            throw error;
+          }
         },
 
         // File explorer actions

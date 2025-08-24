@@ -68,3 +68,7 @@ export interface Response {
   error?: string;
   timestamp: Date;
 }
+
+// Aliases for backward compatibility
+export type AICommand = Command;
+export type AIResponse = Response;

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { invoke } from '@tauri-apps/api/core';
 import type { Project, ProjectConfig, SessionSummary } from '../types';
 
 interface ProjectState {
@@ -32,8 +33,7 @@ export const useProjectStore = create<ProjectState>()(
         loadProjects: async () => {
           set({ isLoading: true, error: null });
           try {
-            // This will be replaced with actual Tauri command call
-            const projects = await mockLoadProjects();
+            const projects = await invoke<Project[]>('db_get_projects');
             set({ projects, isLoading: false });
           } catch (error) {
             set({ 
@@ -54,8 +54,17 @@ export const useProjectStore = create<ProjectState>()(
         createProject: async (config: ProjectConfig) => {
           set({ isLoading: true, error: null });
           try {
-            // This will be replaced with actual Tauri command call
-            const newProject = await mockCreateProject(config);
+            const newProject = await invoke<Project>('db_create_project', {
+              name: config.name,
+              path: config.path,
+              description: config.description || '',
+              settings: config.settings || {
+                defaultAITool: 'claude-code',
+                autoSave: true,
+                collaborationMode: 'single',
+                memoryRetention: 30,
+              },
+            });
             set(state => ({
               projects: [...state.projects, newProject],
               currentProject: newProject,
@@ -74,8 +83,10 @@ export const useProjectStore = create<ProjectState>()(
         updateProject: async (projectId: string, updates: Partial<Project>) => {
           set({ isLoading: true, error: null });
           try {
-            // This will be replaced with actual Tauri command call
-            const updatedProject = await mockUpdateProject(projectId, updates);
+            const updatedProject = await invoke<Project>('db_update_project', {
+              projectId,
+              updates,
+            });
             set(state => ({
               projects: state.projects.map(p => 
                 p.id === projectId ? updatedProject : p
@@ -96,8 +107,7 @@ export const useProjectStore = create<ProjectState>()(
         deleteProject: async (projectId: string) => {
           set({ isLoading: true, error: null });
           try {
-            // This will be replaced with actual Tauri command call
-            await mockDeleteProject(projectId);
+            await invoke('db_delete_project', { projectId });
             set(state => ({
               projects: state.projects.filter(p => p.id !== projectId),
               currentProject: state.currentProject?.id === projectId 
@@ -126,75 +136,3 @@ export const useProjectStore = create<ProjectState>()(
     { name: 'ProjectStore' }
   )
 );
-
-// Mock functions - these will be replaced with actual Tauri commands
-async function mockLoadProjects(): Promise<Project[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {
-          id: '1',
-          name: 'Sample Project',
-          path: '/path/to/project',
-          description: 'A sample project for testing',
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date(),
-          settings: {
-            defaultAITool: 'claude-code',
-            autoSave: true,
-            collaborationMode: 'swarm',
-            memoryRetention: 30,
-          },
-          aiTools: [],
-          sessions: [],
-        },
-      ]);
-    }, 1000);
-  });
-}
-
-async function mockCreateProject(config: ProjectConfig): Promise<Project> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const now = new Date();
-      resolve({
-        id: Date.now().toString(),
-        name: config.name,
-        path: config.path,
-        description: config.description,
-        createdAt: now,
-        updatedAt: now,
-        settings: {
-          defaultAITool: 'claude-code',
-          autoSave: true,
-          collaborationMode: 'single',
-          memoryRetention: 30,
-          ...config.settings,
-        },
-        aiTools: [],
-        sessions: [],
-      });
-    }, 500);
-  });
-}
-
-async function mockUpdateProject(projectId: string, updates: Partial<Project>): Promise<Project> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // This is a mock implementation
-      resolve({
-        id: projectId,
-        updatedAt: new Date(),
-        ...updates,
-      } as Project);
-    }, 500);
-  });
-}
-
-async function mockDeleteProject(projectId: string): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, 500);
-  });
-}

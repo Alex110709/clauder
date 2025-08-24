@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { AITool, Connection, AICommand, AIResponse, ToolSpecificConfig } from '../types';
+import type { Connection, AICommand, AIResponse, ToolSpecificConfig } from '../types';
 
 // Base interface for all AI tool adapters
 export interface AIToolAdapter {
@@ -77,7 +77,7 @@ export abstract class BaseAIAdapter implements AIToolAdapter {
     }
     
     try {
-      console.log(`Sending command to ${this.name}:`, command.command_type);
+      console.log(`Sending command to ${this.name}:`, command.type);
       
       const response = await invoke<AIResponse>('send_ai_command', {
         toolId: this.id,
@@ -100,7 +100,7 @@ export abstract class BaseAIAdapter implements AIToolAdapter {
       // Send a simple ping command to check if the tool is responsive
       const pingCommand: AICommand = {
         id: `ping_${Date.now()}`,
-        tool_id: this.id,
+        toolId: this.id,
         command_type: 'ping',
         payload: {},
         timestamp: new Date(),

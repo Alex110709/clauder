@@ -1,11 +1,40 @@
-import React from 'react';
-import { useUIStore } from '@/stores';
+import React, { useEffect } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { useUIStore, useProjectStore, useSwarmStore } from '@/stores';
 import { MainLayout, ProjectList, AIToolsList, SwarmManager, FlowOrchestrator, ChatInterface, Workspace } from '@/components';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './App.css';
 
 function App() {
-  const { activeView } = useUIStore();
+  const { activeView, loadChatSessions } = useUIStore();
+  const { loadProjects } = useProjectStore();
+  const { loadSwarms } = useSwarmStore();
+
+  // 애플리케이션 초기화
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // 데이터베이스 초기화
+        await invoke('db_initialize');
+        console.log('데이터베이스 초기화 완료');
+        
+        // 프로젝트 데이터 로드
+        await loadProjects();
+        
+        // 채팅 세션 데이터 로드
+        await loadChatSessions();
+        
+        // 스웜 데이터 로드
+        await loadSwarms();
+        
+        console.log('애플리케이션 초기화 완료');
+      } catch (error) {
+        console.error('애플리케이션 초기화 실패:', error);
+      }
+    };
+
+    initializeApp();
+  }, [loadProjects, loadChatSessions, loadSwarms]);
 
   const renderContent = () => {
     switch (activeView) {

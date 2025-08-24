@@ -31,6 +31,7 @@ export interface Agent {
 
 export interface SwarmConfig {
   name: string;
+  projectId?: string;
   objective: string;
   agentCount: number;
   agentTypes: AgentType[];

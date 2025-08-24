@@ -8,11 +8,11 @@ export interface WorkflowNode {
   name: string;
   position: { x: number; y: number };
   data: NodeData;
-  connections: Connection[];
+  connections: WorkflowConnection[];
   status: ExecutionStatus;
 }
 
-export interface Connection {
+export interface WorkflowConnection {
   id: string;
   sourceId: string;
   targetId: string;

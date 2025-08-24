@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { invoke } from '@tauri-apps/api/core';
 import { claudeFlow, type HiveMindConfig } from '@/services/claude-flow';
 import type { 
   Swarm, 
@@ -20,6 +21,7 @@ interface SwarmState {
   error: string | null;
   
   // Actions
+  loadSwarms: () => Promise<void>;
   createSwarm: (config: SwarmConfig) => Promise<Swarm>;
   selectSwarm: (swarmId: string) => void;
   addAgent: (swarmId: string, agent: Agent) => void;
@@ -51,10 +53,41 @@ export const useSwarmStore = create<SwarmState>()(
         error: null,
 
         // Actions
+        loadSwarms: async () => {
+          set({ isLoading: true, error: null });
+          try {
+            const swarms = await invoke<Swarm[]>('db_get_swarms');
+            const swarmsMap = new Map(swarms.map(swarm => [swarm.id, swarm]));
+            
+            // Load agents for each swarm
+            const agentsMap = new Map<string, Agent>();
+            swarms.forEach(swarm => {
+              swarm.agents.forEach(agent => {
+                agentsMap.set(agent.id, agent);
+              });
+            });
+            
+            set({ swarms: swarmsMap, agents: agentsMap, isLoading: false });
+          } catch (error) {
+            set({ 
+              error: error instanceof Error ? error.message : 'Failed to load swarms',
+              isLoading: false 
+            });
+          }
+        },
         createSwarm: async (config: SwarmConfig) => {
           set({ isLoading: true, error: null });
           try {
-            // Claude-Flow 통합을 사용하여 스웜 생성
+            // 먼저 데이터베이스에 스웜 저장
+            const dbSwarm = await invoke<Swarm>('db_create_swarm', {
+              name: config.name,
+              projectId: config.projectId || '',
+              objective: config.objective,
+              agentTypes: config.agentTypes,
+              namespace: config.namespace || `swarm_${Date.now()}`,
+            });
+            
+            // Claude-Flow 통합을 사용하여 실제 스웜 생성
             const hiveMindConfig: HiveMindConfig = {
               objective: config.objective,
               agentCount: config.agentTypes.length,
@@ -63,9 +96,10 @@ export const useSwarmStore = create<SwarmState>()(
               claude: true,
             };
             
+            // 데이터베이스에서 생성된 스웜 정보를 기반으로 세션 생성
             const session = await claudeFlow.createHiveMind(hiveMindConfig);
             
-            // SwarmSession을 Swarm 타입으로 변환
+            // SwarmSession을 Swarm 타입으로 변환하되, 데이터베이스 ID 사용
             const now = new Date();
             const agents: Agent[] = session.agents.map((agentId, index) => ({
               id: agentId,
@@ -74,7 +108,7 @@ export const useSwarmStore = create<SwarmState>()(
               role: index === 0 ? 'coordinator' : 'executor',
               specialization: [config.agentTypes[index] || 'development'],
               isActive: true,
-              swarmId: session.id,
+              swarmId: dbSwarm.id, // 데이터베이스 ID 사용
               performance: {
                 tasksCompleted: 0,
                 successRate: 0,
@@ -85,13 +119,9 @@ export const useSwarmStore = create<SwarmState>()(
             }));
             
             const newSwarm: Swarm = {
-              id: session.id,
-              name: config.name,
-              projectId: '', // 현재 프로젝트 ID로 설정
-              objective: session.objective,
-              status: session.status === 'active' ? 'running' : 'initializing',
+              ...dbSwarm, // 데이터베이스에서 생성된 스웜 정보 사용
               agents,
-              workflow: [],
+              status: session.status === 'active' ? 'running' : 'initializing',
               memory: {
                 namespace: session.namespace,
                 entries: [],
@@ -105,7 +135,6 @@ export const useSwarmStore = create<SwarmState>()(
                 collaborationScore: 0,
                 totalExecutionTime: 0,
               },
-              createdAt: session.createdAt,
               updatedAt: now,
             };
             
