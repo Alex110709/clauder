@@ -6,9 +6,11 @@ export { StatusBar } from './layout/StatusBar';
 
 // Project components
 export { ProjectList } from './project/ProjectList';
+export { ProjectCreateForm } from './project/ProjectCreateForm';
 
 // AI Tools components
 export { AIToolsList } from './ai-tools/AIToolsList';
+export { AIToolSettings } from './ai-tools/AIToolSettings';
 
 // UI components re-exports for convenience
 export * from './ui/button';
@@ -20,3 +22,9 @@ export * from './ui/accordion';
 export * from './ui/badge';
 export * from './ui/separator';
 export * from './ui/tooltip';
+export * from './ui/input';
+export * from './ui/label';
+export * from './ui/textarea';
+export * from './ui/select';
+export * from './ui/switch';
+export * from './ui/alert';

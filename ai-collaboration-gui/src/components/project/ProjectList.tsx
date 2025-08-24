@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useProjectStore, useUIStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,14 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   FolderOpen,
   Plus,
   MoreVertical,
@@ -30,6 +22,7 @@ import {
   Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProjectCreateForm } from './ProjectCreateForm';
 import type { Project } from '@/types';
 
 interface ProjectListProps {
@@ -51,6 +44,8 @@ export const ProjectList: React.FC<ProjectListProps> = ({
     deleteProject,
   } = useProjectStore();
   const { addNotification } = useUIStore();
+
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -128,26 +123,10 @@ export const ProjectList: React.FC<ProjectListProps> = ({
           </p>
         </div>
         {showCreateButton && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                새 프로젝트
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>새 프로젝트 생성</DialogTitle>
-                <DialogDescription>
-                  새로운 AI 협업 프로젝트를 생성합니다.
-                </DialogDescription>
-              </DialogHeader>
-              {/* 여기에 프로젝트 생성 폼이 들어갈 예정 */}
-              <div className="text-center text-muted-foreground py-8">
-                프로젝트 생성 폼 구현 예정
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setShowCreateForm(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            새 프로젝트
+          </Button>
         )}
       </div>
 
@@ -160,25 +139,10 @@ export const ProjectList: React.FC<ProjectListProps> = ({
             첫 번째 AI 협업 프로젝트를 생성해보세요
           </p>
           {showCreateButton && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  새 프로젝트 생성
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>새 프로젝트 생성</DialogTitle>
-                  <DialogDescription>
-                    새로운 AI 협업 프로젝트를 생성합니다.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="text-center text-muted-foreground py-8">
-                  프로젝트 생성 폼 구현 예정
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setShowCreateForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              새 프로젝트 생성
+            </Button>
           )}
         </div>
       ) : (
@@ -273,6 +237,12 @@ export const ProjectList: React.FC<ProjectListProps> = ({
           ))}
         </div>
       )}
+
+      {/* Project Create Form */}
+      <ProjectCreateForm
+        open={showCreateForm}
+        onOpenChange={setShowCreateForm}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAIToolsStore, useUIStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,14 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import {
   Bot,
   Plug,
@@ -32,6 +24,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AIToolSettings } from './AIToolSettings';
 import type { AITool, ToolSpecificConfig } from '@/types';
 
 interface AIToolsListProps {
@@ -54,6 +47,9 @@ export const AIToolsList: React.FC<AIToolsListProps> = ({
     updateToolStatus,
   } = useAIToolsStore();
   const { addNotification } = useUIStore();
+
+  const [selectedTool, setSelectedTool] = useState<AITool | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   const toolsArray = Array.from(tools.values());
 
@@ -138,6 +134,11 @@ export const AIToolsList: React.FC<AIToolsListProps> = ({
       default:
         return '🔧';
     }
+  };
+
+  const handleToolSettings = (tool: AITool) => {
+    setSelectedTool(tool);
+    setShowSettings(true);
   };
 
   if (isLoading) {
@@ -239,7 +240,7 @@ export const AIToolsList: React.FC<AIToolsListProps> = ({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleToolSettings(tool)}>
                           <Settings className="h-4 w-4 mr-2" />
                           설정
                         </DropdownMenuItem>
@@ -338,6 +339,15 @@ export const AIToolsList: React.FC<AIToolsListProps> = ({
             );
           })}
         </div>
+      )}
+
+      {/* AI Tool Settings Dialog */}
+      {selectedTool && (
+        <AIToolSettings
+          tool={selectedTool}
+          open={showSettings}
+          onOpenChange={setShowSettings}
+        />
       )}
     </div>
   );
