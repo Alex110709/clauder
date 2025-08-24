@@ -12,6 +12,23 @@ export { ProjectCreateForm } from './project/ProjectCreateForm';
 export { AIToolsList } from './ai-tools/AIToolsList';
 export { AIToolSettings } from './ai-tools/AIToolSettings';
 
+// Swarm components
+export { SwarmManager } from './SwarmManager';
+export { FlowOrchestrator } from './FlowOrchestrator';
+
+// Chat components
+export { ChatInterface } from './ChatInterface';
+
+// Workspace components
+export { Workspace } from './Workspace';
+export { FileExplorer } from './FileExplorer';
+export { CodeEditor } from './CodeEditor';
+export { Terminal } from './Terminal';
+
+// Theme components
+export { ThemeProvider } from './ThemeProvider';
+export { ThemeToggle, ThemeSettings, ThemePreview } from './ThemeToggle';
+
 // UI components re-exports for convenience
 export * from './ui/button';
 export * from './ui/card';

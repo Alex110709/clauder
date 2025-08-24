@@ -1,7 +1,7 @@
 // UI related types
 export type Theme = 'light' | 'dark' | 'ai-focused';
 export type PanelSize = 'small' | 'medium' | 'large';
-export type ViewMode = 'dashboard' | 'workspace' | 'swarm' | 'flow';
+export type ViewMode = 'dashboard' | 'workspace' | 'chat' | 'swarm' | 'flow';
 
 export interface UIState {
   theme: Theme;

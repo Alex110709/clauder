@@ -1,6 +1,7 @@
 import React from 'react';
 import { useUIStore } from '@/stores';
-import { MainLayout, ProjectList, AIToolsList } from '@/components';
+import { MainLayout, ProjectList, AIToolsList, SwarmManager, FlowOrchestrator, ChatInterface, Workspace } from '@/components';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import './App.css';
 
 function App() {
@@ -12,6 +13,8 @@ function App() {
         return <DashboardView />;
       case 'workspace':
         return <WorkspaceView />;
+      case 'chat':
+        return <ChatView />;
       case 'swarm':
         return <SwarmView />;
       case 'flow':
@@ -22,9 +25,11 @@ function App() {
   };
 
   return (
-    <MainLayout>
-      {renderContent()}
-    </MainLayout>
+    <ThemeProvider defaultTheme="dark">
+      <MainLayout>
+        {renderContent()}
+      </MainLayout>
+    </ThemeProvider>
   );
 }
 
@@ -65,47 +70,24 @@ const DashboardView: React.FC = () => {
   );
 };
 
+// Chat View Component
+const ChatView: React.FC = () => {
+  return <ChatInterface />;
+};
+
 // Workspace View Component
 const WorkspaceView: React.FC = () => {
-  return (
-    <div className="p-6">
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-4">작업공간</h2>
-        <p className="text-muted-foreground">
-          프로젝트 작업공간 기능이 곧 추가될 예정입니다.
-        </p>
-      </div>
-    </div>
-  );
+  return <Workspace />;
 };
 
 // Swarm View Component
 const SwarmView: React.FC = () => {
-  return (
-    <div className="p-6">
-      <AIToolsList showConnectionControls={true} />
-      <div className="mt-8 text-center py-12 border-t">
-        <h2 className="text-2xl font-bold mb-4">AI 스웜 관리</h2>
-        <p className="text-muted-foreground">
-          AI 스웜 오케스트레이션 기능이 곧 추가될 예정입니다.
-        </p>
-      </div>
-    </div>
-  );
+  return <SwarmManager />;
 };
 
 // Flow View Component
 const FlowView: React.FC = () => {
-  return (
-    <div className="p-6">
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-4">워크플로우 디자이너</h2>
-        <p className="text-muted-foreground">
-          시각적 워크플로우 편집기가 곧 추가될 예정입니다.
-        </p>
-      </div>
-    </div>
-  );
+  return <FlowOrchestrator />;
 };
 
 export default App;

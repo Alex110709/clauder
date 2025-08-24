@@ -2,6 +2,7 @@ use log::info;
 use env_logger;
 
 mod commands;
+mod database;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -58,6 +59,38 @@ pub fn run() {
             commands::get_system_info,
             commands::check_tool_availability,
             commands::get_environment_variables,
+            
+            // Database commands
+            commands::db_initialize,
+            commands::db_create_project,
+            commands::db_get_projects,
+            commands::db_update_project,
+            commands::db_delete_project,
+            commands::db_create_chat_session,
+            commands::db_get_chat_sessions,
+            commands::db_create_chat_message,
+            commands::db_get_chat_messages,
+            commands::db_create_swarm,
+            commands::db_get_swarms,
+            commands::db_update_swarm,
+            commands::db_delete_swarm,
+            commands::db_create_ai_tool_config,
+            commands::db_get_ai_tool_configs,
+            commands::db_update_ai_tool_config,
+            commands::db_delete_ai_tool_config,
+            commands::db_get_all_projects,
+            commands::db_update_project,
+            commands::db_delete_project,
+            commands::db_create_chat_session,
+            commands::db_get_chat_sessions,
+            commands::db_create_chat_message,
+            commands::db_get_chat_messages,
+            commands::db_create_swarm,
+            commands::db_get_swarms,
+            commands::db_update_swarm_status,
+            commands::db_save_ai_tool_config,
+            commands::db_get_ai_tool_configs,
+            commands::db_get_statistics,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

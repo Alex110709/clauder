@@ -2,6 +2,7 @@ import React from 'react';
 import { useUIStore, useProjectStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '../ThemeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,39 +13,30 @@ import {
 import {
   Menu,
   Settings,
-  Sun,
-  Moon,
-  Monitor,
   FolderOpen,
   Users,
   Zap,
+  MessageSquare,
+  Code,
+  Home,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Header: React.FC = () => {
   const { 
-    theme, 
     activeView, 
     sidebarCollapsed, 
-    setTheme, 
     setActiveView, 
     toggleSidebar 
   } = useUIStore();
   const { currentProject } = useProjectStore();
 
-  const themeIcons = {
-    light: Sun,
-    dark: Moon,
-    'ai-focused': Monitor,
-  };
-
-  const ThemeIcon = themeIcons[theme];
-
   const viewButtons = [
-    { id: 'dashboard', label: 'Dashboard', icon: FolderOpen },
-    { id: 'workspace', label: 'Workspace', icon: FolderOpen },
-    { id: 'swarm', label: 'Swarm', icon: Users },
-    { id: 'flow', label: 'Flow', icon: Zap },
+    { id: 'dashboard', label: '대시보드', icon: Home },
+    { id: 'workspace', label: '작업공간', icon: Code },
+    { id: 'chat', label: '채팅', icon: MessageSquare },
+    { id: 'swarm', label: '스웜', icon: Users },
+    { id: 'flow', label: '플로우', icon: Zap },
   ] as const;
 
   return (
@@ -98,28 +90,8 @@ export const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center space-x-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="p-2">
-              <ThemeIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme('light')}>
-              <Sun className="h-4 w-4 mr-2" />
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('dark')}>
-              <Moon className="h-4 w-4 mr-2" />
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('ai-focused')}>
-              <Monitor className="h-4 w-4 mr-2" />
-              AI Focused
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+        <ThemeToggle variant="dropdown" size="sm" />
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="p-2">
