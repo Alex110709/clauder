@@ -14,29 +14,25 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className={cn(
-      \"h-screen flex flex-col overflow-hidden\",
+      "h-screen flex flex-col overflow-hidden",
       `theme-${theme}`
     )}>
-      {/* Header */}
       <Header />
       
-      <div className=\"flex flex-1 overflow-hidden\">
-        {/* Sidebar */}
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         
-        {/* Main Content Area */}
         <main className={cn(
-          \"flex-1 flex flex-col overflow-hidden transition-all duration-300\",
-          sidebarCollapsed ? \"ml-16\" : \"ml-64\"
+          "flex-1 flex flex-col overflow-hidden transition-all duration-300",
+          sidebarCollapsed ? "ml-16" : "ml-64"
         )}>
-          <div className=\"flex-1 overflow-auto\">
+          <div className="flex-1 overflow-auto">
             {children}
           </div>
         </main>
       </div>
       
-      {/* Status Bar */}
       <StatusBar />
     </div>
   );
-};"
+};

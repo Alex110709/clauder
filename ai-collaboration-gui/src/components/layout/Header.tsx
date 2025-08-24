@@ -48,28 +48,25 @@ export const Header: React.FC = () => {
   ] as const;
 
   return (
-    <header className=\"h-14 bg-background border-b border-border flex items-center justify-between px-4\">
-      {/* Left Section */}
-      <div className=\"flex items-center space-x-4\">
-        {/* Sidebar Toggle */}
+    <header className="h-14 bg-background border-b border-border flex items-center justify-between px-4">
+      <div className="flex items-center space-x-4">
         <Button
-          variant=\"ghost\"
-          size=\"sm\"
+          variant="ghost"
+          size="sm"
           onClick={toggleSidebar}
-          className=\"p-2\"
+          className="p-2"
         >
-          <Menu className=\"h-4 w-4\" />
+          <Menu className="h-4 w-4" />
         </Button>
 
-        {/* App Title */}
-        <div className=\"flex items-center space-x-2\">
-          <h1 className=\"text-lg font-semibold text-foreground\">
+        <div className="flex items-center space-x-2">
+          <h1 className="text-lg font-semibold text-foreground">
             AI Collaboration GUI
           </h1>
           {currentProject && (
             <>
-              <span className=\"text-muted-foreground\">/</span>
-              <Badge variant=\"secondary\" className=\"text-xs\">
+              <span className="text-muted-foreground">/</span>
+              <Badge variant="secondary" className="text-xs">
                 {currentProject.name}
               </Badge>
             </>
@@ -77,63 +74,59 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Center Section - View Navigation */}
-      <div className=\"flex items-center space-x-1 bg-muted rounded-lg p-1\">
+      <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
         {viewButtons.map((view) => {
           const Icon = view.icon;
           return (
             <Button
               key={view.id}
-              variant={activeView === view.id ? \"default\" : \"ghost\"}
-              size=\"sm\"
+              variant={activeView === view.id ? "default" : "ghost"}
+              size="sm"
               onClick={() => setActiveView(view.id as any)}
               className={cn(
-                \"h-8 px-3 text-xs font-medium transition-all\",
+                "h-8 px-3 text-xs font-medium transition-all",
                 activeView === view.id
-                  ? \"bg-background shadow-sm\"
-                  : \"hover:bg-background/50\"
+                  ? "bg-background shadow-sm"
+                  : "hover:bg-background/50"
               )}
             >
-              <Icon className=\"h-3 w-3 mr-1\" />
+              <Icon className="h-3 w-3 mr-1" />
               {view.label}
             </Button>
           );
         })}
       </div>
 
-      {/* Right Section */}
-      <div className=\"flex items-center space-x-2\">
-        {/* Theme Selector */}
+      <div className="flex items-center space-x-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant=\"ghost\" size=\"sm\" className=\"p-2\">
-              <ThemeIcon className=\"h-4 w-4\" />
+            <Button variant="ghost" size="sm" className="p-2">
+              <ThemeIcon className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align=\"end\">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setTheme('light')}>
-              <Sun className=\"h-4 w-4 mr-2\" />
+              <Sun className="h-4 w-4 mr-2" />
               Light
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme('dark')}>
-              <Moon className=\"h-4 w-4 mr-2\" />
+              <Moon className="h-4 w-4 mr-2" />
               Dark
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme('ai-focused')}>
-              <Monitor className=\"h-4 w-4 mr-2\" />
+              <Monitor className="h-4 w-4 mr-2" />
               AI Focused
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Settings */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant=\"ghost\" size=\"sm\" className=\"p-2\">
-              <Settings className=\"h-4 w-4\" />
+            <Button variant="ghost" size="sm" className="p-2">
+              <Settings className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align=\"end\">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem>
               Preferences
             </DropdownMenuItem>
@@ -149,4 +142,4 @@ export const Header: React.FC = () => {
       </div>
     </header>
   );
-};"
+};
